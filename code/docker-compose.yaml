@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+  local-clickhouse:
+    image: yandex/clickhouse-server
+    ulimits:
+      nofile: 262144
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+
+  clickhouse:
+    image: yandex/clickhouse-server
+    ulimits:
+      nofile: 262144
+    expose:
+      - 8123
+      - 9000
+
+  clickhouse-client:
+    image: yandex/clickhouse-client
+    entrypoint: clickhouse-client --host=clickhouse
+
+  logbroker:
+    build: .
+    environment:
+      - LOGBROKER_CH_HOST=clickhouse
+
+  curl:
+    image: curlimages/curl
